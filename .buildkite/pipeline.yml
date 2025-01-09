@@ -4,19 +4,10 @@ steps:
     key: build
 
   - label: ":x: Intentional Failure"
-    command: "exit 1"
-
-  - label: ":white_check_mark: Test"
-    command: echo "Test the rocket"
-    key: test
-    depends_on: build
-
-  - label: ":rocket: Deploy"
     command: |
-      echo "Launch the rocket"
-      cat .buildkite/annotation.md | buildkite-agent annotate --style "success"
-    key: deploy
-    depends_on: test
+      echo "This will fail intentionally to trigger cancel_on_build_failing";
+      exit 1
+    cancel_on_build_failing: true  # Enable fast fail
 
   - label: ":hammer: Tests"
     commands:
@@ -25,47 +16,15 @@ steps:
     branches: "main"
     env:
       NODE_ENV: "test"
-    artifact_paths:
-      - "logs/**/*"
-      - "coverage/**/*"
-    parallelism: 5
-    timeout_in_minutes: 3
+    parallelism: 3  # To observe cancellations in parallel
     retry:
       automatic:
-        - exit_status: -1
+        - exit_status: 1
           limit: 2
-        - exit_status: 143
-          limit: 2
-        - exit_status: 255
-          limit: 2
+    cancel_on_build_failing: true  # Ensure this step respects fast fail
 
-  - label: "Visual diff"
-    commands:
-      - "npm install"
-      - "npm run visual-diff"
-    retry:
-      automatic:
-        limit: 3
-
-  - label: "Skipped job"
-    command: "broken.sh"
-    skip: "Currently broken and needs to be fixed"
-
-  - wait
-
-  - label: ":shipit: Deploy"
-    command: "deploy.sh"
-    branches: "main"
-    concurrency: 1
-    concurrency_group: "my-app/deploy"
-    retry:
-      manual:
-        allowed: false
-        reason: "Sorry, you can't retry a deployment"
-
-  - wait
-
-  - label: "Smoke test"
-    command: "smoke-test.sh"
-    soft_fail:
-      - exit_status: 1
+  - label: ":rocket: Deploy"
+    command: |
+      echo "Launch the rocket"
+    depends_on: build
+    cancel_on_build_failing: true  # Ensure this step is also subject to fast fail
