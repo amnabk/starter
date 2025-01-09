@@ -5,32 +5,16 @@ steps:
 
   - label: ":x: Intentional Failure"
     command: |
-      echo "This will fail intentionally to trigger cancel_on_build_failing"
+      echo "This will fail intentionally to trigger cancel_on_build_failing";
       exit 1
     cancel_on_build_failing: true
 
-  - label: ":hammer: Tests"
-    commands:
-      - "npm install"
-      - "npm run tests"
-    branches: "main"
-    env:
-      NODE_ENV: "test"
-    parallelism: 3
-    retry:
-      automatic:
-        - exit_status: 1
-          limit: 2
-    cancel_on_build_failing: true
-    key: tests
-
-  - label: ":repeat: Retry Tests"
+  - label: "Dynamic Retry Handling"
     command: |
       if [ "$BUILDKITE_RETRY_COUNT" -gt 0 ]; then
-        echo "Retrying tests..."
-        npm install && npm run tests;
+        echo "Re-uploading pipeline for retry...";
+        buildkite-agent pipeline upload .buildkite/retry-pipeline.yml;
       else
-        echo "Not a retry. Skipping this step.";
-        exit 0;
+        echo "Skipping retry pipeline upload.";
       fi
-    cancel_on_build_failing: false  # Ensure this step is not fast-failed
+    key: retry-handler
