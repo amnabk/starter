@@ -6,7 +6,11 @@ steps:
   - label: ":x: Intentional Failure"
     command: |
       echo "This will fail intentionally to trigger cancel_on_build_failing"
-      exit 1
+       if [ "$BUILDKITE_RETRY_COUNT" -gt 0 ]; then
+        exit 0
+      else
+        exit 1
+      fi
     cancel_on_build_failing: true
 
   - label: "Dynamic Retry Handling"
