@@ -18,7 +18,6 @@ steps:
     key: deploy
     depends_on: test
 
-steps:
   - label: ":hammer: Tests"
     commands:
       - "npm install"
@@ -26,9 +25,6 @@ steps:
     branches: "main"
     env:
       NODE_ENV: "test"
-    agents:
-      npm: "true"
-    
     artifact_paths:
       - "logs/**/*"
       - "coverage/**/*"
