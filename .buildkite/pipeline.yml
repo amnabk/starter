@@ -26,9 +26,11 @@ steps:
 
   - label: ":repeat: Retry Tests"
     command: |
-      echo "Retrying tests..."
-      npm install
-      npm run tests
-    if: build.retrying
-    cancel_on_build_failing: false
-    key: retry_tests
+      if [ "$BUILDKITE_RETRY_COUNT" -gt 0 ]; then
+        echo "Retrying tests..."
+        npm install && npm run tests;
+      else
+        echo "Not a retry. Skipping this step.";
+        exit 0;
+      fi
+    cancel_on_build_failing: false  # Ensure this step is not fast-failed
