@@ -6,7 +6,7 @@ steps:
   - label: ":x: Intentional Failure"
     command: |
       echo "This will fail intentionally to trigger cancel_on_build_failing"
-       if [ "$BUILDKITE_RETRY_COUNT" -gt 0 ]; then
+       if [ "$$BUILDKITE_RETRY_COUNT" -gt 0 ]; then
         exit 0
       else
         exit 1
