@@ -1,0 +1,10 @@
+steps:
+  - label: ":repeat: Retry Tests"
+    commands:
+      - "npm install"
+      - "npm run tests"
+    branches: "main"
+    env:
+      NODE_ENV: "test"
+    parallelism: 3
+    cancel_on_build_failing: false  # Disable fast fail for retry-specific steps
