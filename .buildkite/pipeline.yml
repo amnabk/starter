@@ -22,6 +22,7 @@ steps:
         - exit_status: 1
           limit: 2
     cancel_on_build_failing: true
+    key: tests  # Add a key to this step
 
   - label: "Retry Context"
     command: |
@@ -31,4 +32,4 @@ steps:
       else
         echo "Skipping retry context";
       fi
-    depends_on: ":hammer: Tests"
+    depends_on: tests  # Reference the step key, not the label
