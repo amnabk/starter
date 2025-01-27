@@ -21,15 +21,15 @@ steps:
     parallelism: 3
     cancel_on_build_failing: true
 
-  - label: ":gear: Generate Value and Trigger Second Pipeline"
+  - label: ":gear: Generate Value and Trigger Starter Pipeline 6"
     command: |
       echo "--- Generating a value"
-      VALUE="Hello from the starter pipeline!"
-      echo "--- Triggering second pipeline with VALUE: $VALUE"
+      VALUE="Hello from the first pipeline!"
+      echo "--- Triggering starter-pipeline-6 with VALUE: $VALUE"
       buildkite-agent pipeline upload <<EOF
       steps:
-        - trigger: "second-pipeline"
-          label: ":rocket: Trigger Second Pipeline"
+        - trigger: "starter-pipeline-6"
+          label: ":rocket: Trigger Starter Pipeline 6"
           build:
             env:
               PASSED_VALUE: "$VALUE"
