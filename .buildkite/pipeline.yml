@@ -6,13 +6,13 @@ steps:
   - label: ":x: Intentional Failure"
     command: |
       echo "This will fail intentionally to trigger cancel_on_build_failing"
-       if [ "$$BUILDKITE_RETRY_COUNT" -gt 0 ]; then
+      if [ "$$BUILDKITE_RETRY_COUNT" -gt 0 ]; then
         exit 0
       else
         exit 1
       fi
     cancel_on_build_failing: true
-    
+
   - label: ":hammer: Tests"
     command: echo "test"
     branches: "main"
@@ -20,3 +20,17 @@ steps:
       NODE_ENV: "test"
     parallelism: 3
     cancel_on_build_failing: true
+
+  - label: ":gear: Generate Value and Trigger Second Pipeline"
+    command: |
+      echo "--- Generating a value"
+      VALUE="Hello from the starter pipeline!"
+      echo "--- Triggering second pipeline with VALUE: $VALUE"
+      buildkite-agent pipeline upload <<EOF
+      steps:
+        - trigger: "second-pipeline"
+          label: ":rocket: Trigger Second Pipeline"
+          build:
+            env:
+              PASSED_VALUE: "$VALUE"
+      EOF
