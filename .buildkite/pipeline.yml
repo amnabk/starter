@@ -9,5 +9,5 @@ steps:
    command: |
      if [ "$(buildkite-agent meta-data get exit-code)" = "3" ]; then
        echo 'steps:
-         - trigger: "training-1/starter-pipeline-2"' | buildkite-agent pipeline upload
+         - trigger: "starter-pipeline-2"' | buildkite-agent pipeline upload
      fi
