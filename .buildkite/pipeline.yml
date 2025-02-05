@@ -12,5 +12,5 @@ steps:
       if [ "$EXIT_CODE" = "3" ]; then
         echo 'steps:
           - label: "Triggered pipeline"
-            trigger: "training/starter-pipeline-2"' | buildkite-agent pipeline upload
+            trigger: "training-1/starter-pipeline-2"' | buildkite-agent pipeline upload
       fi
