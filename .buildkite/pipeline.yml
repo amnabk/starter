@@ -16,4 +16,4 @@ steps:
   - label: "Async trigger"
     trigger: "training-1/starter-pipeline-2"
     async: true
-EOF
+
