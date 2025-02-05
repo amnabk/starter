@@ -1,12 +1,19 @@
 steps:
-  - label: "Upload and Trigger"
-    command: |
-      buildkite-agent artifact upload "$some_artifact"
-      buildkite-agent pipeline upload <<EOF
-      steps:
-        - trigger: "training-1/starter-pipeline-2"
-          async: true
-      EOF
+  - label: "Failing Step"
+    commands:
+      - echo "EXIT_CODE=3" >> "$BUILDKITE_ENV_FILE"
+      - exit 3
 
-  - label: "Handle Failure"
-    command: exit 3
+  - label: "Trigger if EXIT_CODE=3"
+    depends_on: ~              # run even if previous step failed
+    allow_dependency_failure: true
+    commands:
+      - |
+        if [ "$EXIT_CODE" = "3" ]; then
+          buildkite-agent pipeline upload <<EOF
+steps:
+  - label: "Async Trigger"
+    trigger: "training-1/starter-pipeline-2"
+    async: true
+EOF
+        fi
