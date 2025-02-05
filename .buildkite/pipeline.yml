@@ -10,8 +10,8 @@ steps:
     command: |
       echo "Current EXIT_CODE value: $EXIT_CODE"
       if [ "$EXIT_CODE" = "3" ]; then
-        echo "steps:
-  - label: \"Async Trigger\"
-    trigger: \"training-1/starter-pipeline-2\"
-    async: true" | buildkite-agent pipeline upload
+        echo 'steps:
+  - label: "Async Trigger"
+    trigger: "training-1/starter-pipeline-2"
+    async: true' | buildkite-agent pipeline upload
       fi
