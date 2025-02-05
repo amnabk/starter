@@ -1,15 +1,20 @@
 steps:
-  - label: "First step"
-    command: |
-      echo "First step failing..."
-      exit 3
-
-  - label: "Second step"
-    if: build.env("BUILDKITE_COMMAND_EXIT_STATUS") == "3"
-    command: |
-      echo "Second step running!"
-      buildkite-agent pipeline upload <<EOF
+  - label: "Step 1: Trigger async pipeline"
+    key: "trigger-step"
+    commands:
+      - echo "Triggering an async pipeline..."
+      - buildkite-agent pipeline upload <<EOF
       steps:
-        - trigger: "training/starter-pipeline-2"
+        - label: "Step 2"
+          trigger: "training-1/starter-pipeline-2"  
           async: true
       EOF
+      # Exit 0 so Buildkite processes the newly uploaded trigger step
+      - exit 0
+
+  - label: "Step 2: Fail the main pipeline"
+    key: "fail-step"
+    commands:
+      - echo "Failing the pipeline now!"
+      - exit 3
+
