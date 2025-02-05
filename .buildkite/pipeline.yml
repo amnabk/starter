@@ -5,7 +5,7 @@ steps:
       exit 3
 
   - label: "Second step"
-    if: build.exit_status == 3
+    if: build.env("BUILDKITE_COMMAND_EXIT_STATUS") == "3"
     command: |
       echo "Second step running!"
       buildkite-agent pipeline upload <<EOF
