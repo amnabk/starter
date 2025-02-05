@@ -1,8 +1,8 @@
 steps:
   - label: "Failing Step"
-    command: |
-      echo "EXIT_CODE=3" >> "$BUILDKITE_ENV_FILE"
-      exit 3
+    commands:
+      - echo "EXIT_CODE=3" >> "$BUILDKITE_ENV_FILE"
+      - exit 3
 
   - label: "Trigger if EXIT_CODE=3"
     depends_on: []
@@ -10,9 +10,7 @@ steps:
     command: |
       echo "Current EXIT_CODE value: $EXIT_CODE"
       if [ "$EXIT_CODE" = "3" ]; then
-        buildkite-agent pipeline upload <<EOF
-steps:
-  - label: "Triggered pipeline"
-    trigger: "training-1/starter-pipeline-2"
-EOF
+        echo 'steps:
+          - label: "Triggered pipeline"
+            trigger: "training/starter-pipeline-2"' | buildkite-agent pipeline upload
       fi
