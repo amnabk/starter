@@ -1,19 +1,12 @@
 steps:
-  - label: "First step"
-    key: "failing-step"
-    commands:
-      - echo "First step failing..."
-      - exit 3
+  - label: "Upload and Trigger"
+    command: |
+      buildkite-agent artifact upload "$some_artifact"
+      buildkite-agent pipeline upload <<EOF
+      steps:
+        - trigger: "training-1/starter-pipeline-2"
+          async: true
+      EOF
 
-  - label: "Second step"
-    key: "trigger-step"
-    # This ensures Step 2 runs even if Step 1 fails
-    depends_on: ~
-    commands:
-      - echo "Second step running!"
-      - buildkite-agent pipeline upload <<EOF
-steps:
-  - label: "Async trigger"
-    trigger: "training-1/starter-pipeline-2"
-    async: true
-
+  - label: "Handle Failure"
+    command: exit 3
