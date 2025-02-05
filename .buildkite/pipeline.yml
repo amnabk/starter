@@ -1,36 +1,11 @@
 steps:
-  - label: ":construction_worker: Build"
-    command: echo "Build the rocket"
-    key: build
-
-  - label: ":x: Intentional Failure"
+  - label: "foo"
     command: |
-      echo "This will fail intentionally to trigger cancel_on_build_failing"
-      if [ "$$BUILDKITE_RETRY_COUNT" -gt 0 ]; then
-        exit 0
-      else
-        exit 1
-      fi
-    cancel_on_build_failing: true
-
-  - label: ":hammer: Tests"
-    command: echo "test"
-    branches: "main"
-    env:
-      NODE_ENV: "test"
-    parallelism: 3
-    cancel_on_build_failing: true
-
-  - label: ":gear: Generate Value and Trigger Starter Pipeline 6"
-    command: |
-      echo "--- Generating a value"
-      VALUE="Hello from the first pipeline!"
-      echo "--- Triggering starter-pipeline-6 with VALUE: $VALUE"
+      echo "Running..."
       buildkite-agent pipeline upload <<EOF
       steps:
-        - trigger: "starter-pipeline-6"
-          label: ":rocket: Trigger Starter Pipeline 6"
-          build:
-            env:
-              PASSED_VALUE: "$VALUE"
+        - label: "Async step"
+          trigger: "training-1/starter-pipeline-2"  
+          async: true
       EOF
+      exit 3
