@@ -13,3 +13,5 @@ steps:
         steps:
           - trigger: "training-1/starter-pipeline-2"
             async: true
+        EOF
+      fi
