@@ -1,11 +1,14 @@
 steps:
-  - label: "foo"
+  - label: "First step"
     command: |
-      echo "Running..."
+      echo "EXIT_CODE=3" >> "$BUILDKITE_ENV_FILE"
+      exit 3
+
+  - label: "Second step"
+    if: build.env("EXIT_CODE") == "3"
+    command: |
       buildkite-agent pipeline upload <<EOF
       steps:
-        - label: "Async step"
-          trigger: "training-1/starter-pipeline-2"  
+        - trigger: "training-1/starter-pipeline-2"
           async: true
-      EOF
-      exit 3
+EOF
