@@ -1,14 +1,13 @@
 steps:
-  - label: "Failing Step"
-    soft_fail: true
-    command: |
-      echo "EXIT_CODE=3" >> "$BUILDKITE_ENV_FILE"
-      exit 3  # Step fails, but pipeline continues
+ - label: "Failing Step"
+   soft_fail: true
+   command: |
+     buildkite-agent meta-data set exit-code 3
+     exit 3
 
-  - label: "Trigger if EXIT_CODE=3"
-    command: |
-      if [ "$EXIT_CODE" = "3" ]; then
-        echo 'steps:
-          - label: "Triggered pipeline"
-            trigger: "training/starter-pipeline-2"' | buildkite-agent pipeline upload
-      fi
+ - label: "Trigger if EXIT_CODE=3"
+   command: |
+     if [ "$(buildkite-agent meta-data get exit-code)" = "3" ]; then
+       echo 'steps:
+         - trigger: "training-1/starter-pipeline-2"' | buildkite-agent pipeline upload
+     fi
