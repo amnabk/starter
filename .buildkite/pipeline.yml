@@ -9,6 +9,6 @@ steps:
     command: |
       buildkite-agent pipeline upload <<EOF
       steps:
-        - trigger: "training-1/starter-pipeline-2"
+        - trigger: "training/starter-pipeline-2"
           async: true
-EOF
+      EOF
