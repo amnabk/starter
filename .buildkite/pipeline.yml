@@ -1,12 +1,13 @@
 steps:
   - label: "First step"
     command: |
-      echo "EXIT_CODE=3" >> "$BUILDKITE_ENV_FILE"
+      echo "First step failing..."
       exit 3
 
   - label: "Second step"
-    if: build.env("EXIT_CODE") == "3"
+    if: build.exit_status == 3
     command: |
+      echo "Second step running!"
       buildkite-agent pipeline upload <<EOF
       steps:
         - trigger: "training/starter-pipeline-2"
