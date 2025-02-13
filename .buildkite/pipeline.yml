@@ -1,17 +1,4 @@
-
 steps:
-  - label: "Failing Step"
-    commands:
-      - echo "EXIT_CODE=3" >> "$BUILDKITE_ENV_FILE"
-      - exit 3
-
-  - label: "Trigger if EXIT_CODE=3"
-    depends_on: []
-    allow_dependency_failure: true
-    command: |
-      echo "Current EXIT_CODE value: $EXIT_CODE"
-      if [ "$EXIT_CODE" = "3" ]; then
-        echo 'steps:
-          - label: "Triggered pipeline"
-            trigger: "starter-pipeline-2"' | buildkite-agent pipeline upload
-      fi
+  - label: ":construction_worker: Build"
+    command: echo "Build the rocket"
+    key: build
