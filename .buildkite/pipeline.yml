@@ -1,14 +1,8 @@
 steps:
   - label: ":construction_worker: Build"
     commands:
-      - |
-        # Calculate queue time in minutes
-        queue_time=$(( (${BUILDKITE_JOB_STARTED_AT:-$(date +%s)} - ${BUILDKITE_BUILD_CREATED_AT:-$(date +%s)}) / 60 ))
-        
-        # Add warning if queued more than 5 minutes
-        if [ "$queue_time" -gt 5 ]; then
-          buildkite-agent annotate "⚠️ Queued for ${queue_time} minutes" --style "warning"
-        fi
-        
-        echo "🚀 Build the rocket"
+      - START_TIME=$(date +%s)
+      - QUEUE_TIME=$(( START_TIME - ${BUILDKITE_BUILD_CREATED_AT:-$START_TIME} ))
+      - if [ "$QUEUE_TIME" -gt 300 ]; then buildkite-agent annotate "⚠️ Queue time: $((QUEUE_TIME/60)) minutes" --style "warning"; fi
+      - echo "🚀 Build the rocket"
     key: build
