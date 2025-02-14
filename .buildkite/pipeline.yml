@@ -2,13 +2,13 @@ steps:
   - label: ":construction_worker: Build"
     commands:
       - |
-        # Get timestamps (fallback to current UNIX time if missing)
+        # Get timestamps (fallback to UNIX timestamp if missing)
         job_started="${BUILDKITE_JOB_STARTED_AT:-$(date -u +%s)}"
         build_created="${BUILDKITE_BUILD_CREATED_AT:-$(date -u +%s)}"
 
-        # Ensure timestamps are always numbers
-        job_started_ts=$(expr "$job_started" + 0)
-        build_created_ts=$(expr "$build_created" + 0)
+        # Ensure timestamps are valid numbers (fallback to 0 if empty)
+        job_started_ts=$(expr "${job_started:-0}" + 0 2>/dev/null)
+        build_created_ts=$(expr "${build_created:-0}" + 0 2>/dev/null)
 
         # Calculate queue time
         time_in_queue=$(( job_started_ts - build_created_ts ))
@@ -25,4 +25,3 @@ steps:
 
         echo "🚀 Build the rocket"
     key: build
-
