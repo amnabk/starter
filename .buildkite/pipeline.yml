@@ -2,10 +2,18 @@ steps:
   - label: ":construction_worker: Build"
     commands:
       - |
-        # Get queue time in seconds
-        time_in_queue=$(( $(date -d "$BUILDKITE_JOB_STARTED_AT" +%s) - $(date -d "$BUILDKITE_BUILD_CREATED_AT" +%s) ))
+        # Ensure variables exist
+        job_started=${BUILDKITE_JOB_STARTED_AT:-$(date +%s)}
+        build_created=${BUILDKITE_BUILD_CREATED_AT:-$(date +%s)}
 
-        # If queued for more than 5 minutes (300 seconds), add a warning
+        # Convert to seconds (handle errors)
+        job_started_ts=$(date -d "$job_started" +%s 2>/dev/null || echo 0)
+        build_created_ts=$(date -d "$build_created" +%s 2>/dev/null || echo 0)
+
+        # Calculate queue time
+        time_in_queue=$(( job_started_ts - build_created_ts ))
+
+        # If queued for more than 5 minutes, annotate
         if [ $time_in_queue -gt 300 ]; then
           buildkite-agent annotate "⚠️ Queued for $((time_in_queue / 60)) minutes before starting." --style "warning"
         fi
