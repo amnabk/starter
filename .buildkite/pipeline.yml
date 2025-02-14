@@ -6,12 +6,17 @@ steps:
         job_started="${BUILDKITE_JOB_STARTED_AT:-$(date -u +%s)}"
         build_created="${BUILDKITE_BUILD_CREATED_AT:-$(date -u +%s)}"
 
-        # Convert timestamps to integers
-        job_started_ts=$((job_started))
-        build_created_ts=$((build_created))
+        # Ensure timestamps are always numbers
+        job_started_ts=$(expr "$job_started" + 0)
+        build_created_ts=$(expr "$build_created" + 0)
 
         # Calculate queue time
         time_in_queue=$(( job_started_ts - build_created_ts ))
+
+        # Debugging - Print values in logs
+        echo "Job Started: $job_started_ts"
+        echo "Build Created: $build_created_ts"
+        echo "Queue Time: $time_in_queue seconds"
 
         # Annotate if queued for over 5 minutes
         if [ "$time_in_queue" -gt 300 ]; then
@@ -20,3 +25,4 @@ steps:
 
         echo "🚀 Build the rocket"
     key: build
+
