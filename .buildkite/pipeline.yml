@@ -1,17 +1,38 @@
 steps:
-  - label: ":construction_worker: Build"
+  - label: "Record Build Start Time"
     commands:
       - |
-        # Record start time
-        START_TIME=$(date +%s)
-        
-        echo "🚀 Build the rocket"
-        
-        # Record end time and calculate duration
-        END_TIME=$(date +%s)
-        DURATION=$((END_TIME - START_TIME))
-        
-        # Add note if it ran quickly (less than 30 seconds)
-        if [ "$DURATION" -lt 30 ]; then
-          buildkite-agent annotate "⚡ Build finished in ${DURATION} seconds - likely skipped" --style "info"
+        # Ensure timestamp is always valid
+        echo "$(date -u +%s)" > build_start_time.txt
+    artifact_paths:
+      - build_start_time.txt
+
+  - label: "Run Job"
+    commands:
+      - |
+        # Read build start time
+        BUILD_CREATED=$(cat build_start_time.txt 2>/dev/null || echo 0)
+
+        # Capture job start time
+        JOB_STARTED=$(date -u +%s)
+
+        # Ensure timestamps are valid numbers
+        BUILD_CREATED=$((BUILD_CREATED + 0))
+        JOB_STARTED=$((JOB_STARTED + 0))
+
+        # Calculate queue time
+        QUEUE_TIME=$((JOB_STARTED - BUILD_CREATED))
+
+        # Debugging - Print values in logs
+        echo "Build Started: $BUILD_CREATED"
+        echo "Job Started: $JOB_STARTED"
+        echo "Queue Time: $QUEUE_TIME seconds"
+
+        # Annotate if job was queued too long
+        if [ "$QUEUE_TIME" -gt 300 ]; then
+          buildkite-agent annotate "⚠️ This job waited in queue for $((QUEUE_TIME / 60)) minutes." --style "warning"
         fi
+    depends_on:
+      - "Record Build Start Time"
+    artifact_paths:
+      - queue_time.log
