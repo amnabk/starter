@@ -2,23 +2,28 @@ steps:
   - label: ":construction_worker: Build"
     commands:
       - |
-        # Get timestamps (fallback to UNIX timestamp if missing)
-        job_started="${BUILDKITE_JOB_STARTED_AT:-$(date -u +%s)}"
-        build_created="${BUILDKITE_BUILD_CREATED_AT:-$(date -u +%s)}"
+        # Capture build creation time manually at the start
+        build_created=$(date -u +%s)
+
+        # Simulating a queue delay (for testing, remove in real use)
+        sleep 10
+
+        # Capture job start time manually
+        job_started=$(date -u +%s)
 
         # Ensure timestamps are always valid numbers
-        job_started_ts="$(echo "${job_started:-0}" | awk '{print ($0+0)}')"
-        build_created_ts="$(echo "${build_created:-0}" | awk '{print ($0+0)}')"
+        job_started_ts=$((job_started))
+        build_created_ts=$((build_created))
 
-        # Calculate queue time (always a valid number)
+        # Calculate queue time
         time_in_queue=$(( job_started_ts - build_created_ts ))
 
         # Debugging - Print values in logs
-        echo "Job Started: \"$job_started_ts\""
-        echo "Build Created: \"$build_created_ts\""
-        echo "Queue Time: \"$time_in_queue\" seconds"
+        echo "Job Started: $job_started_ts"
+        echo "Build Created: $build_created_ts"
+        echo "Queue Time: $time_in_queue seconds"
 
-        # Annotate if queued for over 5 minutes
+        # Annotate if queued for over 5 minutes (300 seconds)
         if [ "$time_in_queue" -gt 300 ]; then
           buildkite-agent annotate "⚠️ Queued for $((time_in_queue / 60)) minutes before starting." --style "warning"
         fi
