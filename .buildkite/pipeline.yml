@@ -2,14 +2,16 @@ steps:
   - label: ":construction_worker: Build"
     commands:
       - |
-        # Capture build creation time manually at the start (fallback to 0 if failed)
-        build_created=$(date -u +%s || echo 0)
+        # Capture build creation time manually at the start (ensure valid value)
+        build_created=$(date -u +%s)
+        if [ -z "$build_created" ]; then build_created=0; fi
 
         # Simulating a queue delay (for testing, remove in real use)
         sleep 10
 
-        # Capture job start time manually (fallback to 0 if failed)
-        job_started=$(date -u +%s || echo 0)
+        # Capture job start time manually (ensure valid value)
+        job_started=$(date -u +%s)
+        if [ -z "$job_started" ]; then job_started=0; fi
 
         # Ensure timestamps are valid numbers
         job_started_ts=$((job_started + 0))
@@ -27,4 +29,3 @@ steps:
         if [ "$time_in_queue" -gt 300 ] 2>/dev/null; then
           buildkite-agent annotate "⚠️ Queued for $((time_in_queue / 60)) minutes before starting." --style "warning"
         fi
-
