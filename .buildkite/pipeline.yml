@@ -2,19 +2,21 @@ steps:
   - label: ":construction_worker: Build"
     commands:
       - |
-        # Get timestamps (fallback to current time if missing)
-        job_started="${BUILDKITE_JOB_STARTED_AT:-$(date -u +'%Y-%m-%dT%H:%M:%SZ')}"
-        build_created="${BUILDKITE_BUILD_CREATED_AT:-$(date -u +'%Y-%m-%dT%H:%M:%SZ')}"
+        # Get timestamps (fallback to current UNIX time if missing)
+        job_started="${BUILDKITE_JOB_STARTED_AT:-$(date -u +%s)}"
+        build_created="${BUILDKITE_BUILD_CREATED_AT:-$(date -u +%s)}"
 
-        # Convert timestamps to seconds (handle errors)
-        job_started_ts=$(date -u -d "$job_started" +%s 2>/dev/null || echo 0)
-        build_created_ts=$(date -u -d "$build_created" +%s 2>/dev/null || echo 0)
+        # Convert timestamps to integers
+        job_started_ts=$((job_started))
+        build_created_ts=$((build_created))
 
         # Calculate queue time
         time_in_queue=$(( job_started_ts - build_created_ts ))
 
         # Annotate if queued for over 5 minutes
-        [ "$time_in_queue" -gt 300 ] && buildkite-agent annotate "⚠️ Queued for $((time_in_queue / 60)) minutes before starting." --style "warning"
+        if [ "$time_in_queue" -gt 300 ]; then
+          buildkite-agent annotate "⚠️ Queued for $((time_in_queue / 60)) minutes before starting." --style "warning"
+        fi
 
         echo "🚀 Build the rocket"
     key: build
