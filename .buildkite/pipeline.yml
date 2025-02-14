@@ -6,15 +6,19 @@ steps:
         job_started=${BUILDKITE_JOB_STARTED_AT:-$(date +%s)}
         build_created=${BUILDKITE_BUILD_CREATED_AT:-$(date +%s)}
 
-        # Convert to seconds (handle errors)
+        # Convert timestamps to seconds, handling errors
         job_started_ts=$(date -d "$job_started" +%s 2>/dev/null || echo 0)
         build_created_ts=$(date -d "$build_created" +%s 2>/dev/null || echo 0)
+
+        # Ensure timestamps are valid numbers
+        job_started_ts=${job_started_ts:-0}
+        build_created_ts=${build_created_ts:-0}
 
         # Calculate queue time
         time_in_queue=$(( job_started_ts - build_created_ts ))
 
-        # If queued for more than 5 minutes, annotate
-        if [ $time_in_queue -gt 300 ]; then
+        # Ensure time_in_queue is a valid number before checking
+        if [ "$time_in_queue" -gt 300 ] 2>/dev/null; then
           buildkite-agent annotate "⚠️ Queued for $((time_in_queue / 60)) minutes before starting." --style "warning"
         fi
 
