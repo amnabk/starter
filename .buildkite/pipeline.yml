@@ -7,19 +7,19 @@ steps:
         build_created="${BUILDKITE_BUILD_CREATED_AT:-$(date -u +%s)}"
 
         # Ensure timestamps are always valid numbers
-        job_started_ts=$(echo "${job_started:-0}" | awk '{print ($0+0)}')
-        build_created_ts=$(echo "${build_created:-0}" | awk '{print ($0+0)}')
+        job_started_ts="$(echo "${job_started:-0}" | awk '{print ($0+0)}')"
+        build_created_ts="$(echo "${build_created:-0}" | awk '{print ($0+0)}')"
 
         # Calculate queue time (always a valid number)
         time_in_queue=$(( job_started_ts - build_created_ts ))
 
         # Debugging - Print values in logs
-        echo "Job Started: $job_started_ts"
-        echo "Build Created: $build_created_ts"
-        echo "Queue Time: $time_in_queue seconds"
+        echo "Job Started: \"$job_started_ts\""
+        echo "Build Created: \"$build_created_ts\""
+        echo "Queue Time: \"$time_in_queue\" seconds"
 
         # Annotate if queued for over 5 minutes
-        if [ "$time_in_queue" -gt 300 ] 2>/dev/null; then
+        if [ "$time_in_queue" -gt 300 ]; then
           buildkite-agent annotate "⚠️ Queued for $((time_in_queue / 60)) minutes before starting." --style "warning"
         fi
 
