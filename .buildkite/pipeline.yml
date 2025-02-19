@@ -1,38 +1,18 @@
 steps:
-  - label: "Record Build Start Time"
-    commands:
-      - |
-        # Ensure timestamp is always valid
-        echo "$(date -u +%s)" > build_start_time.txt
-    artifact_paths:
-      - build_start_time.txt
+  - label: ":one: Step One"
+    command: echo "Running Step One"
+    key: step_one
 
-  - label: "Run Job"
-    commands:
-      - |
-        # Read build start time
-        BUILD_CREATED=$(cat build_start_time.txt 2>/dev/null || echo 0)
+  - label: ":two: Step Two"
+    command: echo "Running Step Two"
+    key: step_two
 
-        # Capture job start time
-        JOB_STARTED=$(date -u +%s)
+  - label: ":three: Step Three"
+    command: echo "Running Step Three"
+    key: step_three
+    depends_on: step_one
 
-        # Ensure timestamps are valid numbers
-        BUILD_CREATED=$((BUILD_CREATED + 0))
-        JOB_STARTED=$((JOB_STARTED + 0))
-
-        # Calculate queue time
-        QUEUE_TIME=$((JOB_STARTED - BUILD_CREATED))
-
-        # Debugging - Print values in logs
-        echo "Build Started: $BUILD_CREATED"
-        echo "Job Started: $JOB_STARTED"
-        echo "Queue Time: $QUEUE_TIME seconds"
-
-        # Annotate if job was queued too long
-        if [ "$QUEUE_TIME" -gt 300 ]; then
-          buildkite-agent annotate "⚠️ This job waited in queue for $((QUEUE_TIME / 60)) minutes." --style "warning"
-        fi
-    depends_on:
-      - "Record Build Start Time"
-    artifact_paths:
-      - queue_time.log
+  - label: ":four: Step Four"
+    command: echo "Running Step Four"
+    key: step_four
+    depends_on: step_two
