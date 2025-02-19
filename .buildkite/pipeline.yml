@@ -3,13 +3,13 @@ steps:
     command: echo "Deploying us-west-2"
     key: us_west_2
 
+  - wait: ~  # First wait step
+
   - label: "Deploy eu-west"
     command: echo "Deploying eu-west"
     key: eu_west
-    if: build.type == "full_test"
 
-  - wait: ~
-    if: build.type == "full_test"
+  - wait: ~  # Second wait step
 
   - label: "Deploy ap-southeast-2"
     command: echo "Deploying ap-southeast-2"
@@ -18,4 +18,3 @@ steps:
   - label: "Deploy us-east-1"
     command: echo "Deploying us-east-1"
     key: us_east
-    if: build.type == "full_test"
