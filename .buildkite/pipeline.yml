@@ -1,18 +1,21 @@
 steps:
-  - label: ":one: Step One"
-    command: echo "Running Step One"
-    key: step_one
+  - label: "Deploy us-west-2"
+    command: echo "Deploying us-west-2"
+    key: us_west_2
 
-  - label: ":two: Step Two"
-    command: echo "Running Step Two"
-    key: step_two
+  - label: "Deploy eu-west"
+    command: echo "Deploying eu-west"
+    key: eu_west
+    if: build.type == "full_test"
 
-  - label: ":three: Step Three"
-    command: echo "Running Step Three"
-    key: step_three
-    depends_on: step_one
+  - wait: ~
+    if: build.type == "full_test"
 
-  - label: ":four: Step Four"
-    command: echo "Running Step Four"
-    key: step_four
-    depends_on: step_two
+  - label: "Deploy ap-southeast-2"
+    command: echo "Deploying ap-southeast-2"
+    key: ap_southeast_2
+
+  - label: "Deploy us-east-1"
+    command: echo "Deploying us-east-1"
+    key: us_east
+    if: build.type == "full_test"
