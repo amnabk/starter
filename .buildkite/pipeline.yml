@@ -1,20 +1,8 @@
-steps:
-  - label: "Deploy us-west-2"
-    command: echo "Deploying us-west-2"
-    key: us_west_2
-
-  - wait: ~  # First wait step
-
-  - label: "Deploy eu-west"
-    command: echo "Deploying eu-west"
-    key: eu_west
-
-  - wait: ~  # Second wait step
-
-  - label: "Deploy ap-southeast-2"
-    command: echo "Deploying ap-southeast-2"
-    key: ap_southeast_2
-
-  - label: "Deploy us-east-1"
-    command: echo "Deploying us-east-1"
-    key: us_east
+---
+notify:
+  - slack:
+      channels: [U07U3PFDC65, buildkite#test-slack-notifications]
+    if: build.state == "started"  # Trigger on build start
+  - slack:
+      channels: [U07U3PFDC65, buildkite#test-slack-notifications]
+    if: build.state == "passed" || build.state == "failed"  # Pass/fail notifications
