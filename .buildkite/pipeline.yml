@@ -1,32 +1,27 @@
 steps:
   - label: ":construction_worker: Build"
     command: |
-      echo "Building the rocket..."
-      sleep 60  # Makes the build step run for 1 minute
-      echo "Build complete!"
+      echo "Build the rocket"
+      sleep 60  # Keeps the build running for a while
     key: build
+    agents:
+      queue: "macos"  # Assigns this step to the macOS hosted agent
 
   - label: ":white_check_mark: Test"
     command: |
-      echo "Testing the rocket..."
-      sleep 60  # Makes the test step run for 1 minute
-      echo "Test complete!"
+      echo "Test the rocket"
+      sleep 60
     key: test
     depends_on: build
+    agents:
+      queue: "macos"
 
   - label: ":rocket: Deploy"
     command: |
-      echo "Launching the rocket..."
-      sleep 60  # Makes the deploy step run for 1 minute
+      echo "Launch the rocket"
+      sleep 60
       cat .buildkite/annotation.md | buildkite-agent annotate --style "success"
-      echo "Launch complete!"
     key: deploy
     depends_on: test
-
-  - label: ":mag: Validate Deployment"
-    command: |
-      echo "Checking rocket status after launch..."
-      sleep 60  # Makes the validation step run for 1 minute
-      echo "Validation complete!"
-    key: validate
-    depends_on: deploy
+    agents:
+      queue: "macos"
