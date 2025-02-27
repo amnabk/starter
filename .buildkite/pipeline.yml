@@ -1,27 +1,9 @@
 steps:
-  - label: ":construction_worker: Build"
-    command: |
-      echo "Build the rocket"
-      sleep 60  # Keeps the build running for a while
-    key: build
-    agents:
-      queue: "macos"  # Assigns this step to the macOS hosted agent
+  - label: "Lock Test - First Process"
+    command: ".buildkite/lock-test-1.sh"
 
-  - label: ":white_check_mark: Test"
-    command: |
-      echo "Test the rocket"
-      sleep 60
-    key: test
-    depends_on: build
-    agents:
-      queue: "macos"
+  - label: "Lock Test - Second Process"
+    command: ".buildkite/lock-test-2.sh"
 
-  - label: ":rocket: Deploy"
-    command: |
-      echo "Launch the rocket"
-      sleep 60
-      cat .buildkite/annotation.md | buildkite-agent annotate --style "success"
-    key: deploy
-    depends_on: test
-    agents:
-      queue: "macos"
+
+#testing only to see if script is executable files not yet added 
