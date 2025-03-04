@@ -3,5 +3,6 @@ steps:
     commands:
       - mkdir -p ~/test-git-mirrors
       - git clone --mirror https://github.com/amnabk/starter.git ~/test-git-mirrors/starter.git
-      - git clone --reference ~/test-git-mirrors/starter.git https://github.com/amnabk/starter.git ~/test-starter2-clone
-      - cd ~/test-starter2-clone && git remote -v
+      - git clone --reference ~/test-git-mirrors/starter.git https://github.com/amnabk/starter.git ~/test-starter-clone
+      - cd ~/test-starter-clone && git remote -v
+
