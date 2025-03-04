@@ -28,12 +28,18 @@ steps:
       - "job4"
       - "job5"
     command: |
+      # Ensure we always set a default value
       buildkite-agent meta-data set "failed_steps" "false"
+
+      # Check each job outcome
       for step in job1 job2 job3 job4 job5; do
-        outcome=$(buildkite-agent step get "outcome" --step "$step")
+        outcome=$(buildkite-agent step get "outcome" --step "$step" || echo "unknown")
+        echo "$step outcome: $outcome"
+
         if [ "$outcome" == "hard_failed" ]; then
+          echo "Setting failed_steps to true"
           buildkite-agent meta-data set "failed_steps" "true"
-          break
+          exit 0  # Stop checking after first failure
         fi
       done
 
@@ -41,7 +47,10 @@ steps:
     depends_on: "failure-check"
     allow_dependency_failure: true
     command: |
-      if [ "$(buildkite-agent meta-data get "failed_steps")" == "true" ]; then
+      # Get the failure status, default to false if missing
+      FAILED_STEPS=$(buildkite-agent meta-data get "failed_steps" || echo "false")
+
+      if [ "$FAILED_STEPS" == "true" ]; then
         echo "Sending notification: A job failed!"
       else
         echo "No failures detected, skipping alert."
