@@ -1,9 +1,48 @@
 steps:
-  - label: "Lock Test - First Process"
-    command: ".buildkite/lock-test-1.sh"
+  - label: "Job 1"
+    key: "job1"
+    command: "exit 0"
 
-  - label: "Lock Test - Second Process"
-    command: ".buildkite/lock-test-2.sh"
+  - label: "Job 2 (Fails)"
+    key: "job2"
+    command: "exit 1"
 
+  - label: "Job 3"
+    key: "job3"
+    command: "exit 0"
 
-#testing only to see if script is executable files not yet added 
+  - label: "Job 4"
+    key: "job4"
+    command: "exit 0"
+
+  - label: "Job 5"
+    key: "job5"
+    command: "exit 0"
+
+  - label: "Check for Failures"
+    key: "failure-check"
+    depends_on:
+      - "job1"
+      - "job2"
+      - "job3"
+      - "job4"
+      - "job5"
+    command: |
+      buildkite-agent meta-data set "failed_steps" "false"
+      for step in job1 job2 job3 job4 job5; do
+        outcome=$(buildkite-agent step get "outcome" --step "$step")
+        if [ "$outcome" == "hard_failed" ]; then
+          buildkite-agent meta-data set "failed_steps" "true"
+          break
+        fi
+      done
+
+  - label: "Alert on Failure"
+    depends_on: "failure-check"
+    allow_dependency_failure: true
+    command: |
+      if [ "$(buildkite-agent meta-data get "failed_steps")" == "true" ]; then
+        echo "Sending notification: A job failed!"
+      else
+        echo "No failures detected, skipping alert."
+      fi
