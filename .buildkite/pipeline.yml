@@ -1,11 +1,14 @@
 steps:
-  - label: ":cat: Say Meow"
-    command: |
-      echo "--- Sending some cuteness"
-      cat <<'EOF' > cat.txt
- /\_/\  
-( o.o ) 
- > ^ <   Meow! Your build is purr-fect!
-EOF
-      buildkite-agent annotate "$(cat cat.txt)" --style "success"
+  - label: ":hammer: Build"
+    command: "scripts/build.sh"
+    key: build
 
+  - label: ":test_tube: Test"
+    command: "scripts/test.sh"
+    key: test
+    depends_on: build
+
+  - label: ":rocket: Deploy"
+    command: "scripts/deploy.sh"
+    key: deploy
+    depends_on: test
