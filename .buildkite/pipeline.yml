@@ -1,14 +1,9 @@
 steps:
-  - label: ":hammer: Build"
-    command: "scripts/build.sh"
-    key: build
-
-  - label: ":test_tube: Test"
-    command: "scripts/test.sh"
-    key: test
-    depends_on: build
-
-  - label: ":rocket: Deploy"
-    command: "scripts/deploy.sh"
-    key: deploy
-    depends_on: test
+  - label: ":sparkles: Hello Buildkite"
+    commands:
+      - echo "🐝 Starting up..."
+      - echo "Running a few cool things..."
+      - echo "First line of output"
+      - echo "Second line of output"
+      - echo "✅ Done!"
+      - buildkite-agent annotate "🎉 Build complete!<br>Everything ran smoothly!" --style "success"
