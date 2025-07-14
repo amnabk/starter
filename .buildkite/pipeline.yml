@@ -1,9 +1,6 @@
 steps:
-  - label: ":test_tube: Inline Test"
+  - label: ":memo: Annotation Test"
     command: |
-      echo "Running test..."
-      if echo "Simulating test logic..." && true; then
-        buildkite-agent annotate "✅ Tests passed!" --style "success"
-      else
-        buildkite-agent annotate "❌ Tests failed!" --style "error"
-      fi
+      echo "Testing Bk annotation..."
+      buildkite-agent annotate "✅ Annotation works!<br>This is a test message from the pipeline." --style "success"
+
