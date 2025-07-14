@@ -1,10 +1,9 @@
 steps:
   - label: ":test_tube: Inline Test"
-    commands:
-      - echo "Running test..."
-      - |
-        if echo "Simulating test logic..." && true; then
-          buildkite-agent annotate "✅ Tests passed!" --style "success"
-        else
-          buildkite-agent annotate "❌ Tests failed!" --style "error"
-        fi
+    command: |
+      echo "Running test..."
+      if echo "Simulating test logic..." && true; then
+        buildkite-agent annotate "✅ Tests passed!" --style "success"
+      else
+        buildkite-agent annotate "❌ Tests failed!" --style "error"
+      fi
