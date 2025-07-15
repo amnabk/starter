@@ -1,21 +1,19 @@
 steps:
-  - label: ":hammer: Simulated Tests"
+  - label: ":hammer: Simulated Tests for %{ENVIRONMENT}"
     command: |
-      echo -e "\033[36m🔍 Running tests in $ENV...\033[0m"
+      echo -e "\033[36m🔍 Running tests in $ENVIRONMENT...\033[0m"
 
-      # Simulate a failure only in 'two'
-      if [ "$ENV" = "two" ]; then
-        echo -e "\033[31m❌ Tests failed in $ENV\033[0m"
-        buildkite-agent annotate "❌ Tests failed in <b>$ENV</b>" --style "error" --context "$ENV"
+      if [ "$ENVIRONMENT" = "two" ]; then
+        echo -e "\033[31m❌ Tests failed in $ENVIRONMENT\033[0m"
+        buildkite-agent annotate "❌ Tests failed in <b>$ENVIRONMENT</b>" --style "error" --context "$ENVIRONMENT"
         exit 1
       else
-        echo -e "\033[32m✅ Tests passed in $ENV\033[0m"
-        buildkite-agent annotate "✅ Tests passed in <b>$ENV</b>" --style "success" --context "$ENV"
+        echo -e "\033[32m✅ Tests passed in $ENVIRONMENT\033[0m"
+        buildkite-agent annotate "✅ Tests passed in <b>$ENVIRONMENT</b>" --style "success" --context "$ENVIRONMENT"
       fi
-    env:
-      ENV: "%ENVIRONMENT%"
     matrix:
-      ENVIRONMENT:
-        - one
-        - two
-        - three
+      env:
+        ENVIRONMENT:
+          - one
+          - two
+          - three
