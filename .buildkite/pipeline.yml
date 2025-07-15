@@ -1,18 +1,18 @@
 steps:
-  - label: ":test_tube: Testing %{ENV}"
+  - matrix:
+      # This defines three separate runs
+      - ENV_NAME: one
+      - ENV_NAME: two
+      - ENV_NAME: three
+    label: ":test_tube: Testing %{ENV_NAME}"
     command: |
-      echo -e "\033[36m🔍 Running tests for $ENV...\033[0m"
+      echo -e "\033[36m🔍 Running tests for $ENV_NAME...\033[0m"
 
-      if [ "$ENV" = "two" ]; then
-        echo -e "\033[31m❌ Simulated failure in $ENV\033[0m"
-        buildkite-agent annotate "❌ Failed in <b>$ENV</b>" --style "error" --context "$ENV"
+      if [ "$ENV_NAME" = "two" ]; then
+        echo -e "\033[31m❌ Simulated failure in $ENV_NAME\033[0m"
+        buildkite-agent annotate "❌ Failed in <b>$ENV_NAME</b>" --style "error" --context "$ENV_NAME"
         exit 1
       else
-        echo -e "\033[32m✅ Success in $ENV\033[0m"
-        buildkite-agent annotate "✅ Passed in <b>$ENV</b>" --style "success" --context "$ENV"
+        echo -e "\033[32m✅ Success in $ENV_NAME\033[0m"
+        buildkite-agent annotate "✅ Passed in <b>$ENV_NAME</b>" --style "success" --context "$ENV_NAME"
       fi
-    matrix:
-      ENV:
-        - one
-        - two
-        - three
