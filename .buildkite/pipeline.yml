@@ -1,6 +1,21 @@
 steps:
-  - label: ":memo: Annotation Test"
+  - label: ":hammer: Simulated Tests"
     command: |
-      echo "Testing Bk annotation..."
-      buildkite-agent annotate "✅ Annotation works!<br>This is a test message from the pipeline." --style "success"
+      echo -e "\033[36m🔍 Running tests in $ENV...\033[0m"
 
+      # Simulate a failure only in 'two'
+      if [ "$ENV" = "two" ]; then
+        echo -e "\033[31m❌ Tests failed in $ENV\033[0m"
+        buildkite-agent annotate "❌ Tests failed in <b>$ENV</b>" --style "error" --context "$ENV"
+        exit 1
+      else
+        echo -e "\033[32m✅ Tests passed in $ENV\033[0m"
+        buildkite-agent annotate "✅ Tests passed in <b>$ENV</b>" --style "success" --context "$ENV"
+      fi
+    env:
+      ENV: "%ENVIRONMENT%"
+    matrix:
+      ENVIRONMENT:
+        - one
+        - two
+        - three
